@@ -234,30 +234,10 @@ jQuery.tableDnD = {
     makeDraggable: function(table) {
         var config = table.tableDnDConfig;
 
-        config.dragHandle
-            // We only need to add the event to the specified cells
-            && $(config.dragHandle, table).each(function() {
-                // The cell is bound to "this"
-                $(this).bind(startEvent, function(e) {
-                    $.tableDnD.initialiseDrag($(this).parents('tr')[0], table, this, e, config);
-                    return false;
-                });
-            })
-            // For backwards compatibility, we add the event to the whole row
-            // get all the rows as a wrapped set
-            || $(table.rows).each(function() {
-                // Iterate through each row, the row is bound to "this"
-                if (! $(this).hasClass("nodrag")) {
-                    $(this).bind(startEvent, function(e) {
-                        if (e.target.tagName == "TD") {
-                            $.tableDnD.initialiseDrag(this, table, this, e, config);
-                            return false;
-                        }
-                    }).css("cursor", "move"); // Store the tableDnD object
-                } else {
-                    $(this).css("cursor", ""); // Remove the cursor if we don't have the nodrag class
-                }
-            });
+        $(table).on(startEvent, config.dragHandle, function(e) {
+            $.tableDnD.initialiseDrag($(this).parents('tr')[0], table, this, e, config);
+            return false;
+        });
     },
     currentOrder: function() {
         var rows = this.currentTable.rows;
